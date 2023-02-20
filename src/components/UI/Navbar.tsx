@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import {
   SearchOutlined,
   ShoppingCart,
@@ -13,9 +16,12 @@ import {
   IconButton,
   Badge,
 } from '@mui/material';
+import { UIContext } from 'context/UI';
 
-import NextLink from 'next/link';
 export const Navbar = () => {
+  const { route } = useRouter();
+  const { sideMenuOpen, toggleSideMenu } = useContext(UIContext);
+  const flag = route.split('/')[2];
   return (
     <AppBar>
       <Toolbar>
@@ -29,17 +35,21 @@ export const Navbar = () => {
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <NextLink href="/category/men" passHref legacyBehavior>
             <Link>
-              <Button>Hombres</Button>
+              <Button color={flag === 'men' ? 'primary' : 'info'}>
+                Hombres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href="/category/women" passHref legacyBehavior>
             <Link>
-              <Button>Mujeres</Button>
+              <Button color={flag === 'women' ? 'primary' : 'info'}>
+                Mujeres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href="/category/kid" passHref legacyBehavior>
             <Link>
-              <Button>Niño</Button>
+              <Button color={flag === 'kid' ? 'primary' : 'info'}>Niño</Button>
             </Link>
           </NextLink>
         </Box>
@@ -56,7 +66,7 @@ export const Navbar = () => {
             </IconButton>
           </Link>
         </NextLink>
-        <Button>Menu</Button>
+        <Button onClick={toggleSideMenu}>Menu</Button>
       </Toolbar>
     </AppBar>
   );

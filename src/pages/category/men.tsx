@@ -1,21 +1,20 @@
 import { ShopLayout } from '@/components/Layouts';
-import { Typography } from '@mui/material';
-
 import { ProductList } from '@/components/Products';
-import { useProducts } from 'hooks';
 import { FullScreenLoading } from '@/components/UI';
-
-export default function Home() {
-  const { error, isLoading, products } = useProducts('/products');
-  // if (error) return <div>failed to load</div>;
-  // if (isLoading) return <div>loading...</div>;
+import { Typography } from '@mui/material';
+import { useProducts } from 'hooks';
+const MenCategoryPage = () => {
+  const { error, isLoading, products } = useProducts('/products?gender=men');
   return (
-    <ShopLayout title="Home" pageDescription="Las tres B">
+    <ShopLayout
+      title="Teslo shop | Hombres"
+      pageDescription="Teslo shop categoria para hombres"
+    >
       <Typography variant="h1" component="h1">
         Tienda
       </Typography>
       <Typography variant="h2" sx={{ mb: 1 }}>
-        Todos los productos
+        Categoria hombres
       </Typography>
       {isLoading ? (
         <FullScreenLoading />
@@ -24,4 +23,6 @@ export default function Home() {
       )}
     </ShopLayout>
   );
-}
+};
+
+export default MenCategoryPage;
