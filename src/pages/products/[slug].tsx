@@ -5,7 +5,6 @@ import {
   GetStaticProps,
   GetStaticPaths,
 } from 'next';
-// import { useRouter } from 'next/router';
 import { ShopLayout } from '../../components/Layouts/ShopLayout';
 import { initialData } from 'database/products';
 import { Box, Button, Chip, Grid, Typography } from '@mui/material';
@@ -109,22 +108,3 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     revalidate: 86400,
   };
 };
-
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   const product = await dbProducts.getProductBySlug(`${ctx.query.slug}`);
-
-//   if (!product) {
-//     return {
-//       redirect: {
-//         destination: '/',
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       product,
-//     },
-//   };
-// };
