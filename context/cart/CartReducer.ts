@@ -19,6 +19,7 @@ export const CartReducer = (
     case 'Cart - LoadCart from cookies | storage':
       return {
         ...state,
+        cart: action.payload,
       };
     case 'Cart - Add product':
       return {
