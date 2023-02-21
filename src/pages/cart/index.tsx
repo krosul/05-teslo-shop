@@ -9,9 +9,13 @@ import {
 } from '@mui/material';
 import { ShopLayout } from '../../components/Layouts/ShopLayout';
 import { CartList, OrderResume } from '@/components/Cart';
+
 const CartPage = () => {
   return (
-    <ShopLayout title="Carro - ${cantidad}" pageDescription="carrito de compra">
+    <ShopLayout
+      title="Teslo Shop | Carrito"
+      pageDescription="carrito de compra"
+    >
       <Typography variant="h1" component="h1">
         Carrito
       </Typography>

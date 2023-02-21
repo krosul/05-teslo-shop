@@ -7,32 +7,34 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { initialData } from '../../../database/products';
-import { FC } from 'react';
+
+import { FC, useContext } from 'react';
 import NextLink from 'next/link';
 import { ItemCounter } from '../UI';
-const productsInCart = [
-  initialData.products[0],
-  initialData.products[1],
-  initialData.products[3],
-];
+import { ICart } from 'interfaces';
+import { CartContext } from 'context/cart';
 
 interface Props {
   editable?: boolean;
 }
 
 export const CartList: FC<Props> = ({ editable = false }) => {
+  const { cart: productsInCart, updateCartQuantity } = useContext(CartContext);
+  const handlerChangeQuantity = (product: ICart, newQuantity: number) => {
+    product.quantify = newQuantity;
+    updateCartQuantity(product);
+  };
   return (
     <>
       {productsInCart.map((product) => (
-        <Grid container key={product.slug} sx={{ mb: 1 }}>
+        <Grid container key={product.slug + product.size} sx={{ mb: 1 }}>
           <Grid item xs={3}>
             {/*LLevar a la pagina del producto*/}
-            <NextLink href="products/slug" passHref legacyBehavior>
+            <NextLink href={`/product/${product.slug}`} passHref legacyBehavior>
               <Link>
                 <CardActionArea>
                   <CardMedia
-                    image={`/products/${product.images[0]}`}
+                    image={`/products/${product.images}`}
                     component="img"
                     sx={{ borderRadius: 5 }}
                   />
@@ -44,12 +46,20 @@ export const CartList: FC<Props> = ({ editable = false }) => {
             <Box display="flex" flexDirection="column" marginLeft={1}>
               <Typography variant="body1">{product.title}</Typography>
               <Typography variant="body1">
-                Talla:<strong>M</strong>
+                Talla:<strong>{product.size}</strong>
               </Typography>
               {editable ? (
-                <ItemCounter />
+                <ItemCounter
+                  quantify={product.quantify}
+                  maxValue={product.inStock}
+                  onChangeQuantify={(newQuantity) =>
+                    handlerChangeQuantity(product, newQuantity)
+                  }
+                />
               ) : (
-                <Typography variant="h6">3 items</Typography>
+                <Typography variant="h6">{`${product.quantify} ${
+                  product.quantify > 1 ? 'Productos' : 'Producto'
+                }`}</Typography>
               )}
             </Box>
           </Grid>
