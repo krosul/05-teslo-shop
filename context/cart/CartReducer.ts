@@ -1,5 +1,6 @@
-import { ICart } from 'interfaces';
-import { CartState } from '.';
+import {ICart} from 'interfaces';
+import {CartState} from '.';
+import {stat} from 'fs';
 
 type CartActionType =
   | {
@@ -10,12 +11,10 @@ type CartActionType =
       type: 'Cart - Add product';
       payload: ICart[];
     }
-  | { type: 'Cart - Update quantity'; payload: ICart };
+  | {type: 'Cart - Update quantity'; payload: ICart}
+  | {type: 'Cart - Delete product'; payload: ICart};
 
-export const CartReducer = (
-  state: CartState,
-  action: CartActionType
-): CartState => {
+export const CartReducer = (state: CartState, action: CartActionType): CartState => {
   switch (action.type) {
     case 'Cart - LoadCart from cookies | storage':
       return {
@@ -31,15 +30,23 @@ export const CartReducer = (
       return {
         ...state,
         cart: state.cart.map((pro) => {
-          if (
-            pro._id === action.payload._id &&
-            pro.size === action.payload.size
-          ) {
+          if (pro._id === action.payload._id && pro.size === action.payload.size) {
             pro.quantify = action.payload.quantify!;
           }
           return pro;
         }),
       };
+    case 'Cart - Delete product': {
+      return {
+        ...state,
+        cart: state.cart.filter((pro) => {
+          if (pro._id === action.payload._id && pro.size === action.payload.size) {
+            return;
+          }
+          return pro;
+        }),
+      };
+    }
     default:
       return state;
   }
