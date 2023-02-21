@@ -14,6 +14,8 @@ import { SizeSelector } from '@/components/Products';
 // import { useProducts } from 'hooks';
 import { ICart, IProduct } from 'interfaces';
 import { dbProducts } from 'database';
+import { useContext } from 'react';
+import { CartContext } from 'context/cart';
 
 // const product = initialData.products[0];
 interface Props {
@@ -21,7 +23,7 @@ interface Props {
 }
 const ProductDetailPage: NextPage<Props> = ({ product }) => {
   const router = useRouter();
-
+  const { addProductInCart, cart } = useContext(CartContext);
   const inStock = product.inStock > 0;
   const [tempCartProduct, setTempCartProduct] = useState<ICart>({
     _id: product._id,
@@ -36,8 +38,19 @@ const ProductDetailPage: NextPage<Props> = ({ product }) => {
   });
   const onAddProduct = () => {
     if (!tempCartProduct.size) return;
+    const productIsExist = cart.findIndex(
+      (product) =>
+        product._id === tempCartProduct._id &&
+        product.size === tempCartProduct.size
+    );
+    console.log(productIsExist);
 
-    router.push('/cart');
+    if (productIsExist !== -1) {
+      cart[productIsExist].quantify += tempCartProduct.quantify;
+      return addProductInCart(cart);
+    }
+    addProductInCart(cart.concat(tempCartProduct));
+    // router.push('/cart');
   };
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
@@ -71,7 +84,11 @@ const ProductDetailPage: NextPage<Props> = ({ product }) => {
               />
             </Box>
             {inStock ? (
-              <Button color="secondary" className="circular-btn">
+              <Button
+                color="secondary"
+                className="circular-btn"
+                onClick={onAddProduct}
+              >
                 {tempCartProduct.size
                   ? 'Agregar al carrito'
                   : 'Seleccione una talla'}

@@ -8,7 +8,7 @@ type CartActionType =
     }
   | {
       type: 'Cart - Add product';
-      payload: ICart;
+      payload: ICart[];
     };
 
 export const CartReducer = (
@@ -20,7 +20,11 @@ export const CartReducer = (
       return {
         ...state,
       };
-
+    case 'Cart - Add product':
+      return {
+        ...state,
+        cart: action.payload,
+      };
     default:
       return state;
   }
