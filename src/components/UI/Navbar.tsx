@@ -1,6 +1,6 @@
-import { useContext, useState } from 'react';
+import {useContext, useState} from 'react';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import {
   ClearOutlined,
   SearchOutlined,
@@ -19,11 +19,13 @@ import {
   Input,
   InputAdornment,
 } from '@mui/material';
-import { UIContext } from 'context/UI';
+import {UIContext} from 'context/UI';
+import {CartContext} from 'context/cart';
 
 export const Navbar = () => {
-  const { route, push } = useRouter();
-  const { sideMenuOpen, toggleSideMenu } = useContext(UIContext);
+  const {route, push} = useRouter();
+  const {sideMenuOpen, toggleSideMenu} = useContext(UIContext);
+  const {numberOfItems} = useContext(CartContext);
   const flag = route.split('/')[2];
 
   const [SearchTerm, setSeachTerm] = useState('');
@@ -40,28 +42,24 @@ export const Navbar = () => {
         <NextLink href={'/'} passHref legacyBehavior>
           <Link display="flex" alignItems="center">
             <Typography variant="h6">Teslo |</Typography>
-            <Typography sx={{ ml: 0.5 }}>Shop</Typography>
+            <Typography sx={{ml: 0.5}}>Shop</Typography>
           </Link>
         </NextLink>
         <Box flex={1} />
         <Box
           sx={{
-            display: isSearchVisible ? 'none' : { xs: 'none', sm: 'block' },
+            display: isSearchVisible ? 'none' : {xs: 'none', sm: 'block'},
           }}
           className="fadeIn"
         >
           <NextLink href="/category/men" passHref legacyBehavior>
             <Link>
-              <Button color={flag === 'men' ? 'primary' : 'info'}>
-                Hombres
-              </Button>
+              <Button color={flag === 'men' ? 'primary' : 'info'}>Hombres</Button>
             </Link>
           </NextLink>
           <NextLink href="/category/women" passHref legacyBehavior>
             <Link>
-              <Button color={flag === 'women' ? 'primary' : 'info'}>
-                Mujeres
-              </Button>
+              <Button color={flag === 'women' ? 'primary' : 'info'}>Mujeres</Button>
             </Link>
           </NextLink>
           <NextLink href="/category/kid" passHref legacyBehavior>
@@ -77,7 +75,7 @@ export const Navbar = () => {
             className="fadeIn"
             autoFocus
             type="text"
-            sx={{ display: { xs: 'none', sm: 'flex' } }}
+            sx={{display: {xs: 'none', sm: 'flex'}}}
             value={SearchTerm}
             onKeyDown={(e) => (e.key === 'Enter' ? onSeachTerm() : null)}
             onChange={(e) => setSeachTerm(e.target.value)}
@@ -94,22 +92,19 @@ export const Navbar = () => {
           <IconButton
             onClick={() => setIsSearchVisible(true)}
             className="fadeIn"
-            sx={{ display: { xs: 'none', sm: 'flex' } }}
+            sx={{display: {xs: 'none', sm: 'flex'}}}
           >
             <SearchOutlined />
           </IconButton>
         )}
-        <IconButton
-          sx={{ display: { xs: 'flex', sm: 'none' } }}
-          onClick={toggleSideMenu}
-        >
+        <IconButton sx={{display: {xs: 'flex', sm: 'none'}}} onClick={toggleSideMenu}>
           <SearchOutlined />
         </IconButton>
 
         <NextLink href="/cart" passHref legacyBehavior>
           <Link>
             <IconButton>
-              <Badge badgeContent={2} color="secondary">
+              <Badge badgeContent={numberOfItems > 10 ? '+9' : numberOfItems} color="secondary">
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
