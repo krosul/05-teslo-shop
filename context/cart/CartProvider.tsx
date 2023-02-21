@@ -33,6 +33,23 @@ export const CartProVider: FC<Props> = ({children}) => {
     }
   }, [state.cart]);
 
+  useEffect(() => {
+    const numberOfItems = state.cart.reduce((counter, actual) => actual.quantify + counter, 0);
+    const subTotal = state.cart.reduce(
+        (counter, actual) =>
+          actual.quantify > 1 ? actual.quantify * actual.price + counter : actual.price + counter,
+        0
+      ),
+      taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0);
+    const orderSumary = {
+      numberOfItems,
+      subTotal,
+      tax: subTotal * taxRate,
+      total: subTotal * (taxRate + 1),
+    };
+    console.log(orderSumary);
+  }, [state.cart]);
+
   const addProductInCart = (product: ICart[]) => {
     console.log(product);
     dispatch({type: 'Cart - Add product', payload: product});
@@ -44,6 +61,7 @@ export const CartProVider: FC<Props> = ({children}) => {
   const deleteProductInCart = (product: ICart) => {
     dispatch({type: 'Cart - Delete product', payload: product});
   };
+
   return (
     <CartContext.Provider
       value={{
