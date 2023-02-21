@@ -6,6 +6,7 @@ import {
   Box,
   Typography,
   Link,
+  Chip,
 } from '@mui/material';
 import { IProduct } from 'interfaces';
 
@@ -25,7 +26,7 @@ export const ProductCard: FC<Props> = ({ product }) => {
       ? `/products/${product.images[1]}`
       : `/products/${product.images[0]}`;
   }, [IsHovered, product.images]);
-
+  const inStock = product.inStock <= 0;
   return (
     <Grid
       item
@@ -38,6 +39,18 @@ export const ProductCard: FC<Props> = ({ product }) => {
         <NextLink href={`/products/${product.slug}`} passHref legacyBehavior>
           <Link>
             <CardActionArea>
+              {inStock && (
+                <Chip
+                  color="primary"
+                  label="No hay disponibles"
+                  sx={{
+                    position: 'absolute',
+                    zIndex: '3',
+                    top: '10px',
+                    left: '15px',
+                  }}
+                />
+              )}
               <CardMedia
                 component="img"
                 image={productImage}
