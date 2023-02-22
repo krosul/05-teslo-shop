@@ -1,29 +1,24 @@
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import {
-  NextPage,
-  GetServerSideProps,
-  GetStaticProps,
-  GetStaticPaths,
-} from 'next';
-import { ShopLayout } from '../../components/Layouts/ShopLayout';
-import { initialData } from 'database/products';
-import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import { ItemCounter, SlideShow } from '@/components/UI';
-import { SizeSelector } from '@/components/Products';
+import {useRouter} from 'next/router';
+import React, {useState} from 'react';
+import {NextPage, GetServerSideProps, GetStaticProps, GetStaticPaths} from 'next';
+import {ShopLayout} from '../../components/Layouts/ShopLayout';
+
+import {Box, Button, Chip, Grid, Typography} from '@mui/material';
+import {ItemCounter, SlideShow} from '@/components/UI';
+import {SizeSelector} from '@/components/Products';
 // import { useProducts } from 'hooks';
-import { ICart, IProduct } from 'interfaces';
-import { dbProducts } from 'database';
-import { useContext } from 'react';
-import { CartContext } from 'context/cart';
+import {ICart, IProduct} from 'interfaces';
+import {dbProducts} from 'database';
+import {useContext} from 'react';
+import {CartContext} from 'context/cart';
 
 // const product = initialData.products[0];
 interface Props {
   product: IProduct;
 }
-const ProductDetailPage: NextPage<Props> = ({ product }) => {
+const ProductDetailPage: NextPage<Props> = ({product}) => {
   const router = useRouter();
-  const { addProductInCart, cart } = useContext(CartContext);
+  const {addProductInCart, cart} = useContext(CartContext);
   const inStock = product.inStock > 0;
   const [tempCartProduct, setTempCartProduct] = useState<ICart>({
     _id: product._id,
@@ -39,9 +34,7 @@ const ProductDetailPage: NextPage<Props> = ({ product }) => {
   const onAddProduct = () => {
     if (!tempCartProduct.size) return;
     const productIsExist = cart.findIndex(
-      (product) =>
-        product._id === tempCartProduct._id &&
-        product.size === tempCartProduct.size
+      (product) => product._id === tempCartProduct._id && product.size === tempCartProduct.size
     );
     console.log(productIsExist);
 
@@ -66,42 +59,28 @@ const ProductDetailPage: NextPage<Props> = ({ product }) => {
             <Typography variant="subtitle1" component="h2">
               ${product.price}
             </Typography>
-            <Box sx={{ my: 2 }}>
+            <Box sx={{my: 2}}>
               <Typography variant="subtitle2">Cantidad</Typography>
               <ItemCounter
                 quantify={tempCartProduct.quantify}
                 maxValue={tempCartProduct.inStock}
-                onChangeQuantify={(n) =>
-                  setTempCartProduct({ ...tempCartProduct, quantify: n })
-                }
+                onChangeQuantify={(n) => setTempCartProduct({...tempCartProduct, quantify: n})}
               />
               <SizeSelector
                 selectedSize={tempCartProduct.size}
                 sizes={product.sizes}
-                onSelectedSize={(talla) =>
-                  setTempCartProduct({ ...tempCartProduct, size: talla })
-                }
+                onSelectedSize={(talla) => setTempCartProduct({...tempCartProduct, size: talla})}
               />
             </Box>
             {inStock ? (
-              <Button
-                color="secondary"
-                className="circular-btn"
-                onClick={onAddProduct}
-              >
-                {tempCartProduct.size
-                  ? 'Agregar al carrito'
-                  : 'Seleccione una talla'}
+              <Button color="secondary" className="circular-btn" onClick={onAddProduct}>
+                {tempCartProduct.size ? 'Agregar al carrito' : 'Seleccione una talla'}
               </Button>
             ) : (
-              <Chip
-                label="No hay disponibles"
-                color="error"
-                variant="outlined"
-              />
+              <Chip label="No hay disponibles" color="error" variant="outlined" />
             )}
           </Box>
-          <Box sx={{ mt: 3 }}>
+          <Box sx={{mt: 3}}>
             <Typography variant="subtitle1">Descripcion</Typography>
             <Typography variant="body2">{product.description}</Typography>
           </Box>
@@ -127,15 +106,15 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
   const Slugs = await dbProducts.getAllProducsSlugs();
 
   return {
-    paths: Slugs.map(({ slug }) => ({
-      params: { slug },
+    paths: Slugs.map(({slug}) => ({
+      params: {slug},
     })),
     fallback: 'blocking',
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { slug } = params as { slug: string };
+export const getStaticProps: GetStaticProps = async ({params}) => {
+  const {slug} = params as {slug: string};
   const product = await dbProducts.getProductBySlug(`${slug}`);
 
   if (!product) {

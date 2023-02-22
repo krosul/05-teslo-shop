@@ -11,7 +11,7 @@ const userSchema = new Schema(
       enum: {
         values: ['admin', 'client'],
         message: '{Value} no es un tipo de rol permitido',
-        default: 'algo',
+        default: 'client',
         required: true,
       },
     },
