@@ -1,66 +1,108 @@
-import React from 'react';
+import {useState} from 'react';
 import NextLink from 'next/link';
-import { AuthLayout } from '@/components/Layouts';
-import {
-  Box,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  Link,
-  Divider,
-} from '@mui/material';
+import {AuthLayout} from '@/components/Layouts';
+import {Box, Grid, Typography, TextField, Button, Link, Divider, Chip} from '@mui/material';
+import {useForm} from 'react-hook-form';
+import {validations} from 'utils';
+import {tesloApi} from 'api';
+import {ErrorOutline} from '@mui/icons-material';
 
+type FormData = {
+  email: string;
+  password: string;
+};
 const loginPage = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<FormData>();
+
+  const [showMessageError, setShowMessageError] = useState(false);
+
+  const onLogginUser = async ({email, password}: FormData) => {
+    setShowMessageError(false);
+    try {
+      const {data} = await tesloApi.post('/user/login', {email, password});
+      console.log({data});
+    } catch (err) {
+      setShowMessageError(true);
+      setTimeout(() => setShowMessageError(false), 3000);
+      console.log(err);
+    }
+  };
+
   return (
     <AuthLayout title="Inicia sesion">
-      <Box sx={{ width: 350, padding: '10px 20px' }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="h1" component="h1">
-              Iniciar sesion
-            </Typography>
+      <form onSubmit={handleSubmit(onLogginUser)}>
+        <Box sx={{width: 350, padding: '10px 20px'}}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h1" component="h1">
+                Iniciar sesion
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Correo"
+                variant="filled"
+                fullWidth
+                {...register('email', {
+                  required: 'Este campo es requerido',
+                  validate: validations.isEmail,
+                })}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Contraseña"
+                type="password"
+                variant="filled"
+                fullWidth
+                {...register('password', {
+                  required: 'Este campo es requerido',
+                  minLength: {value: 6, message: 'Minimo 6 caracteres'},
+                })}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              {showMessageError && (
+                <Chip
+                  label="No existe ese correo o contraseña"
+                  color="error"
+                  icon={<ErrorOutline />}
+                  className="fadeIn"
+                  sx={{display: 'flex', padding: 1, marginY: 0.5}}
+                />
+              )}
+              <Button
+                type="submit"
+                color="secondary"
+                className="circular-btn"
+                size="large"
+                fullWidth
+                disabled={showMessageError}
+              >
+                Ingresar
+              </Button>
+            </Grid>
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" gap={2}>
+              <Divider sx={{width: '45%', fontSize: '15px'}} />
+              <Typography variant="h6">O</Typography>
+              <Divider sx={{width: '45%', fontSize: '15px'}} />
+            </Grid>
+            <Grid item xs={12} display="grid" justifyItems="center">
+              <NextLink href="/auth/register" passHref legacyBehavior>
+                <Link underline="always">Registrarse</Link>
+              </NextLink>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField label="Correo" variant="filled" fullWidth />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Contraseña"
-              type="password"
-              variant="filled"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              color="secondary"
-              className="circular-btn"
-              size="large"
-              fullWidth
-            >
-              Ingresar
-            </Button>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            gap={2}
-          >
-            <Divider sx={{ width: '45%', fontSize: '15px' }} />
-            <Typography variant="h6">O</Typography>
-            <Divider sx={{ width: '45%', fontSize: '15px' }} />
-          </Grid>
-          <Grid item xs={12} display="grid" justifyItems="center">
-            <NextLink href="/auth/register" passHref legacyBehavior>
-              <Link underline="always">Registrarse</Link>
-            </NextLink>
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </form>
     </AuthLayout>
   );
 };
