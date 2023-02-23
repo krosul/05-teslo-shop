@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import {useRouter} from 'next/router';
+import {useState, useContext} from 'react';
 import NextLink from 'next/link';
 import {AuthLayout} from '@/components/Layouts';
 import {Box, Grid, Typography, TextField, Button, Link, Divider, Chip} from '@mui/material';
@@ -6,6 +7,7 @@ import {useForm} from 'react-hook-form';
 import {validations} from 'utils';
 import {tesloApi} from 'api';
 import {ErrorOutline} from '@mui/icons-material';
+import {AuthContext} from 'context/auth';
 
 type FormData = {
   email: string;
@@ -18,18 +20,20 @@ const loginPage = () => {
     formState: {errors},
   } = useForm<FormData>();
 
+  const {logginUser} = useContext(AuthContext);
+  const router = useRouter();
   const [showMessageError, setShowMessageError] = useState(false);
 
   const onLogginUser = async ({email, password}: FormData) => {
     setShowMessageError(false);
-    try {
-      const {data} = await tesloApi.post('/user/login', {email, password});
-      console.log({data});
-    } catch (err) {
+    const islogginSuccess = await logginUser(email, password);
+
+    if (!islogginSuccess) {
       setShowMessageError(true);
       setTimeout(() => setShowMessageError(false), 3000);
-      console.log(err);
+      return;
     }
+    router.replace('/');
   };
 
   return (

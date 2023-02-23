@@ -1,28 +1,30 @@
 import '@/styles/globals.css';
-import type { AppProps } from 'next/app';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { SWRConfig } from 'swr';
-import { lightTheme } from 'themes';
-import { UIProVider } from 'context/UI';
-import { CartProVider } from 'context/cart';
+import type {AppProps} from 'next/app';
+import {CssBaseline, ThemeProvider} from '@mui/material';
+import {SWRConfig} from 'swr';
+import {lightTheme} from 'themes';
+import {UIProVider} from 'context/UI';
+import {CartProVider} from 'context/cart';
+import {AuthProVider} from 'context/auth';
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({Component, pageProps}: AppProps) {
   return (
     <SWRConfig
       value={{
         refreshInterval: 3000,
-        fetcher: (resource, init) =>
-          fetch(resource, init).then((res) => res.json()),
+        fetcher: (resource, init) => fetch(resource, init).then((res) => res.json()),
       }}
     >
-      <CartProVider>
-        <UIProVider>
-          <ThemeProvider theme={lightTheme}>
-            <CssBaseline />
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </UIProVider>
-      </CartProVider>
+      <AuthProVider>
+        <CartProVider>
+          <UIProVider>
+            <ThemeProvider theme={lightTheme}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </UIProVider>
+        </CartProVider>
+      </AuthProVider>
     </SWRConfig>
   );
 }
