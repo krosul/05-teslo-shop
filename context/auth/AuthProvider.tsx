@@ -1,4 +1,4 @@
-import {FC, ReactNode, useReducer} from 'react';
+import {FC, ReactNode, useReducer, useEffect} from 'react';
 import {AuthContext, AuthReducer} from './';
 import {IUser} from 'interfaces';
 import {tesloApi} from 'api';
@@ -21,6 +21,33 @@ interface Props {
 
 export const AuthProVider: FC<Props> = ({children}) => {
   const [state, dispatch] = useReducer(AuthReducer, AUTH_INITIAL_STATE);
+
+  useEffect(() => {
+    checkToken();
+  }, []);
+
+  const checkToken = async () => {
+    try {
+      const {data} = await tesloApi('/user/valid-token');
+
+      const {
+        token: tokenDb,
+        user,
+        message,
+      } = data as {token: string; user: IUser; message?: string};
+      if (message) {
+        Cookies.remove('token');
+        dispatch({type: 'Auth - Logout'});
+        return;
+      }
+      Cookies.set('token', tokenDb);
+
+      dispatch({type: 'Auth - Login', payload: user});
+    } catch (err) {
+      Cookies.remove('token');
+      return;
+    }
+  };
 
   const logginUser = async (email: string, password: string): Promise<boolean> => {
     try {
