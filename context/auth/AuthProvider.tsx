@@ -3,6 +3,7 @@ import {AuthContext, AuthReducer} from './';
 import {IUser} from 'interfaces';
 import {tesloApi} from 'api';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export interface AuthState {
   isLoggedIn: boolean;
@@ -33,5 +34,41 @@ export const AuthProVider: FC<Props> = ({children}) => {
     }
   };
 
-  return <AuthContext.Provider value={{...state, logginUser}}>{children}</AuthContext.Provider>;
+  const registerUser = async (
+    name: string,
+    email: string,
+    password: string
+  ): Promise<{
+    hasError: boolean;
+    message?: string;
+  }> => {
+    try {
+      const {data} = await tesloApi.post('/user/register', {email, password, name});
+      const {token, user} = data;
+      Cookies.set('token', token);
+      console.log({data});
+      dispatch({type: 'Auth - Login', payload: user});
+      return {
+        hasError: false,
+        message: '',
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return {
+          hasError: true,
+          message: err.response?.data.message,
+        };
+      }
+      return {
+        hasError: true,
+        message: 'No se pudo crear el usuario - intente de nuevo',
+      };
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{...state, logginUser, registerUser}}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

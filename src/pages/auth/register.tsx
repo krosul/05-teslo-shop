@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import NextLink from 'next/link';
 import {AuthLayout} from '@/components/Layouts';
 import {Box, Grid, Typography, TextField, Button, Link, Divider, Chip} from '@mui/material';
@@ -6,6 +6,9 @@ import {useForm} from 'react-hook-form';
 import {tesloApi} from 'api';
 import {validations} from 'utils';
 import {ErrorOutline} from '@mui/icons-material';
+import {useRouter} from 'next/router';
+
+import {AuthContext} from 'context/auth';
 
 type FormData = {
   name: string;
@@ -21,20 +24,20 @@ const RegisterPage = () => {
   } = useForm<FormData>();
 
   const [showMessageError, setShowMessageError] = useState(false);
-
+  const [messageError, setMessageError] = useState('');
+  const {registerUser} = useContext(AuthContext);
+  const router = useRouter();
   const onRegisterUser = async ({email, password, name}: FormData) => {
     setShowMessageError(false);
-    console.log(email, name, password);
 
-    try {
-      const {data} = await tesloApi.post('/user/register', {email, password, name});
-      console.log({data});
-    } catch (err) {
+    const {hasError, message} = await registerUser(name, email, password);
+    if (hasError) {
       setShowMessageError(true);
-
+      setMessageError(message!);
       setTimeout(() => setShowMessageError(false), 3000);
-      console.log(err);
+      return;
     }
+    router.replace('/');
   };
 
   return (
