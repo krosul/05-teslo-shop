@@ -5,7 +5,7 @@ import {AuthLayout} from '@/components/Layouts';
 import {Box, Grid, Typography, TextField, Button, Link, Divider, Chip} from '@mui/material';
 import {useForm} from 'react-hook-form';
 import {validations} from 'utils';
-import {tesloApi} from 'api';
+
 import {ErrorOutline} from '@mui/icons-material';
 import {AuthContext} from 'context/auth';
 
@@ -33,7 +33,8 @@ const loginPage = () => {
       setTimeout(() => setShowMessageError(false), 3000);
       return;
     }
-    router.replace('/');
+    const destination = router.query.p?.toString() || '/';
+    router.replace(destination);
   };
 
   return (
@@ -100,7 +101,7 @@ const loginPage = () => {
               <Divider sx={{width: '45%', fontSize: '15px'}} />
             </Grid>
             <Grid item xs={12} display="grid" justifyItems="center">
-              <NextLink href="/auth/register" passHref legacyBehavior>
+              <NextLink href={`/auth/register?p=${router.query.p || '/'}`} passHref legacyBehavior>
                 <Link underline="always">Registrarse</Link>
               </NextLink>
             </Grid>

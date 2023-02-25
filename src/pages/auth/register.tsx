@@ -37,7 +37,8 @@ const RegisterPage = () => {
       setTimeout(() => setShowMessageError(false), 3000);
       return;
     }
-    router.replace('/');
+    const destination = router.query.p?.toString() || '/';
+    router.replace(destination);
   };
 
   return (
@@ -117,7 +118,7 @@ const RegisterPage = () => {
               <Divider sx={{width: '45%', fontSize: '15px'}} />
             </Grid>
             <Grid item xs={12} display="grid" justifyItems="center">
-              <NextLink href="/auth/login" passHref legacyBehavior>
+              <NextLink href={`/auth/login?p=${router.query.p || '/'}`} passHref legacyBehavior>
                 <Link underline="always">Inicia sesion</Link>
               </NextLink>
             </Grid>
