@@ -7,6 +7,7 @@ export interface ContextProps {
   subTotal: number;
   tax: number;
   total: number;
+  isLoaded: boolean;
   addProductInCart: (product: ICart[]) => void;
   updateCartQuantity: (product: ICart) => void;
   deleteProductInCart: (Product: ICart) => void;
