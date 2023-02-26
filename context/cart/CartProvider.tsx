@@ -3,6 +3,7 @@ import Cookie from 'js-cookie';
 import {CartContext, CartReducer} from '.';
 import {ICart} from 'interfaces';
 import {Product} from 'models';
+import Cookies from 'js-cookie';
 
 export interface CartState {
   cart: ICart[];
@@ -11,6 +12,7 @@ export interface CartState {
   tax: number;
   total: number;
   isLoaded: boolean;
+  shippingAddress?: ShippingAddress;
 }
 
 const CART_INITIAL_STATE: CartState = {
@@ -20,7 +22,18 @@ const CART_INITIAL_STATE: CartState = {
   tax: 0,
   total: 0,
   isLoaded: false,
+  shippingAddress: undefined,
 };
+export interface ShippingAddress {
+  name: string;
+  lastName: string;
+  address: string;
+  address2: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone: string;
+}
 
 interface Props {
   children: ReactNode;
@@ -60,6 +73,22 @@ export const CartProVider: FC<Props> = ({children}) => {
     dispatch({type: 'Cart - Update order summary', payload: orderSumary});
   }, [state.cart]);
 
+  useEffect(() => {
+    if (Cookies.get('name') !== undefined) {
+      const shippingAddres = {
+        name: Cookies.get('name') || '',
+        lastName: Cookies.get('lastName') || '',
+        address: Cookies.get('address') || '',
+        address2: Cookies.get('address2') || '',
+        zip: Cookies.get('zip') || '',
+        city: Cookies.get('city') || '',
+        country: Cookies.get('country') || '',
+        phone: Cookies.get('phone') || '',
+      };
+      dispatch({type: 'Cart - Load Address from Cookies', payload: shippingAddres});
+    }
+  }, []);
+
   const addProductInCart = (product: ICart[]) => {
     console.log(product);
     dispatch({type: 'Cart - Add product', payload: product});
@@ -71,7 +100,17 @@ export const CartProVider: FC<Props> = ({children}) => {
   const deleteProductInCart = (product: ICart) => {
     dispatch({type: 'Cart - Delete product', payload: product});
   };
-
+  const updateAddress = (data: ShippingAddress) => {
+    Cookies.set('name', data.name);
+    Cookies.set('lastName', data.lastName);
+    Cookies.set('address', data.address);
+    Cookies.set('address2', data.address2 || '');
+    Cookies.set('zip', data.zip);
+    Cookies.set('city', data.city);
+    Cookies.set('country', data.country);
+    Cookies.set('phone', data.phone);
+    dispatch({type: 'Cart - Update Address from Cookies', payload: data});
+  };
   return (
     <CartContext.Provider
       value={{
@@ -79,6 +118,7 @@ export const CartProVider: FC<Props> = ({children}) => {
         addProductInCart,
         updateCartQuantity,
         deleteProductInCart,
+        updateAddress,
       }}
     >
       {children}
